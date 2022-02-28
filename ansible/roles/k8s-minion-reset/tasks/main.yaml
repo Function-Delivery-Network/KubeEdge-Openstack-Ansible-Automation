@@ -1,0 +1,21 @@
+- name: Reset the Kubernetes cluster using kubeadm
+  command: kubeadm reset --force
+  ignore_errors: True
+  become: True
+
+- name: Clean the k8s reset
+  command: "{{ item }}"
+  with_items:
+    - sh /usr/local/bin/k3s-agent-uninstall.sh
+    - sh /usr/local/bin/k3s-killall.sh
+    - rm -r /home/{{ user }}/.kube/config
+    - rm -rf /var/lib/cni/
+    - rm -rf /var/lib/kubelet/*
+    - rm -rf /etc/cni/
+    - ifconfig cni0 down
+    - ifconfig flannel.1 down
+    - ifconfig docker0 down
+    - ip link delete cni0
+    - ip link delete flannel.1
+  ignore_errors: True
+  become: True

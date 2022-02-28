@@ -1,0 +1,69 @@
+---
+- name: Create config directory for root user
+  become: True
+  file:
+    path: /root/.kube
+    state: directory
+    mode: "0755"
+
+- name: Copy config file to root user directory
+  copy:
+    remote_src: yes
+    src: /etc/kubernetes/admin.conf
+    dest: $HOME/.kube/config
+    owner: "root"
+    group: "root"
+    mode: 0600
+  become: True
+
+- name: Uncomment port=0 in yaml
+  become: True
+  ansible.builtin.replace:
+    path: "{{ item.path }}"
+    regexp: '^(.*)- --port=0(.*)$'
+    replace: '#- --port=0'
+  loop:
+    - path: /etc/kubernetes/manifests/kube-scheduler.yaml
+    - path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+
+- name: Disable taint in kubernetes
+  command: kubectl taint nodes --all node-role.kubernetes.io/master:NoSchedule-
+  ignore_errors: True
+
+#- name: Restart kubelet service
+#  become: True
+#  command: systemctl restart kubelet
+
+# Configure KubeEdge
+- name: Run keadm
+  become: True
+  command: keadm init --advertise-address={{ hostvars[inventory_hostname].ansible_host }} --kube-config=/root/.kube/config
+
+# Create service cloudcore
+- name: Set link for service
+  become: true
+  ansible.builtin.file:
+    src: /etc/kubeedge/cloudcore.service
+    dest: /etc/systemd/system/cloudcore.service
+    state: link
+
+- name: service
+  become: True
+  ansible.builtin.systemd:
+    daemon_reload: yes
+    name: cloudcore.service
+    state: restarted
+    enabled: yes
+
+- name: timeout
+  wait_for:
+    timeout: 20
+
+- name: Generate keadm token
+  command: keadm gettoken --kube-config=/root/.kube/config
+  register: keadm_token
+  become: True
+
+- name: Copy keadm join command to local file
+  become: false
+  local_action: copy content="keadm join --cloudcore-ipport={{ hostvars[inventory_hostname].ansible_host }}:10000 --token={{ keadm_token.stdout_lines[0] }}" dest="./from_remote/keadm-join-command"

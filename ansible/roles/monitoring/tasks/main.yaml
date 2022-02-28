@@ -1,0 +1,19 @@
+- name: Copy files to host
+  become: True
+  copy:
+    src: "{{ role_path }}/files/"
+    dest: $PWD/monitoring/
+
+
+- name: Install Monitoring setup
+  become: "{{ user }}"
+  command: "{{ item }}"
+  with_items:
+   - kubectl apply --server-side -f monitoring/manifests/setup
+
+- pause: seconds=20
+- name: Install Monitoring components
+  become: "{{ user }}"
+  command: "{{ item }}"
+  with_items:
+   - kubectl apply -f monitoring/manifests/

@@ -1,0 +1,16 @@
+---
+- name: Copy the join command to server location
+  copy: src="./from_remote/keadm-join-command" dest=/tmp/keadm-join-command.sh mode=0777
+
+- name: timeout
+  wait_for:
+    timeout: 20
+
+- name: Join the Kubernetes cluster using keadm
+  become: True
+  shell: sh /tmp/keadm-join-command.sh
+  ignore_errors: True
+
+- name: timeout
+  wait_for:
+    timeout: 20

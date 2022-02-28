@@ -1,0 +1,25 @@
+---
+- name: Read the /etc/kubeedge/config/edgecore.yaml
+  become: True
+  slurp:
+    path: /etc/kubeedge/config/edgecore.yaml
+  register: r_myfile
+
+- name: extract the data
+  set_fact:
+    mydata: "{{ r_myfile['content'] | b64decode | from_yaml }}"
+
+- name: Modify edgeStream to true
+  set_fact:
+    mydata: "{{ mydata | combine({'modules': {'edgeMesh': {'enable': false}}}, recursive=True) }}"
+
+- name: Write back to /etc/kubeedge/config/edgecore.yaml
+  become: True
+  copy:
+    content: '{{ mydata | to_nice_yaml }}'
+    dest: /etc/kubeedge/config/edgecore.yaml
+
+- name: Kill edgecore and restart it
+  become: True
+  command: systemctl restart edgecore.service
+

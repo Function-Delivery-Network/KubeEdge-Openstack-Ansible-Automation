@@ -1,0 +1,165 @@
+- name: Uninstall old packages
+  become: True
+  apt:
+    state: absent
+    pkg:
+      - kubelet
+      - kubeadm
+      - kubernetes-cni
+
+- name: Remove swapfile from /etc/fstab
+  become: True
+  mount:
+    name: "{{ item }}"
+    fstype: swap
+    state: absent
+  with_items:
+    - swap
+    - none
+
+- name: Disable swap
+  become: True
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+
+- name: "Add k8's official GPG key to apt"
+  ansible.builtin.apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    # Key destination path
+    keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+    state: present
+
+#- name: Add a GPG key
+#  shell: curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+#  ignore_errors: True
+
+- name: Get DEB architecture
+  shell: dpkg --print-architecture
+  register: deb_architecture
+
+- name: Add repository for k8s
+  apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    filename: kubernetes.list
+  become: True
+
+- name: Install Kubernetes binaries
+  become: True
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+      - kubelet
+      - kubeadm
+      - kubectl
+  ignore_errors: True
+
+  # https://github.com/ansible/ansible/issues/51663
+  register: result
+  until: result is not failed
+  retries: 12 # Wait up to 1 min
+  delay: 5
+  
+- name: unmask kubelet
+  shell: systemctl unmask kubelet
+  become: True
+  ignore_errors: True
+
+
+- name: Restart kubelet
+  become: True
+  service:
+    name: kubelet
+    daemon_reload: yes
+    state: restarted
+
+- name: Initialize the Kubernetes cluster using kubeadm
+  become: True
+  command: "{{ item }}"
+  with_items:
+   - systemctl start docker
+   - kubeadm init --pod-network-cidr=10.244.0.0/16
+
+- name: Create config directory for non-root user
+  become: True
+  file:
+    path: $PWD/.kube
+    state: directory
+    mode: "0755"
+
+- name: Copy config file to non-root user directory
+  copy:
+    remote_src: yes
+    src: /etc/kubernetes/admin.conf
+    dest: $PWD/.kube/config
+    owner: "{{ user }}"
+    mode: 0600
+  become: True
+
+- name: Copy files to host
+  become: True
+  copy:
+    src: "{{ role_path }}/files/"
+    dest: $PWD/my_files/
+
+- name: Install flannel pod network
+  become: yes
+  become_user: "{{ user }}"
+  #command: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
+  command: kubectl apply -f my_files/kube-flannel.yml
+
+- name: Check for taint
+  become: "{{ user }}"
+  shell: kubectl describe node {{ ansible_hostname }} | grep "node-role.kubernetes.io/master:NoSchedule"
+  register: hasTaint
+  ignore_errors: True
+
+- name: Remove the taint from master
+  become: "{{ user }}"
+  command: kubectl taint node {{ ansible_hostname }} node-role.kubernetes.io/master-
+  when: hasTaint is succeeded
+
+- name: Generate join command
+  become: yes
+  become_user: "{{ user }}"
+  command: kubeadm token create --print-join-command
+  register: join_command
+
+- name: Copy join command to local file
+  become: false
+  local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="from_remote/join-command"
+
+- name: Fetch config
+  fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: from_remote/kubeconfig.conf
+  become: True
+
+- name: Install K8s dashboard
+  become: "{{ user }}"
+  command: "{{ item }}"
+  with_items:
+   - kubectl apply -f my_files/dashboard.yaml
+   - kubectl create clusterrolebinding serviceaccounts-cluster-admin --clusterrole=cluster-admin --group=system:serviceaccounts
+
+#- name: Copy dashboard-admin-user.yaml to the cluster
+#  become: True
+#  copy:
+#    src: "{{ role_path }}/files/dashboard-admin.yaml"
+#    dest: $PWD/my_openfaas/dashboard-admin-user.yaml
+#
+#- name: Create the admin user
+#  become: "{{ user }}"
+#  command: kubectl apply -f my_openfaas/dashboard-admin.yaml
+#
+#- name: Save token to file
+#  become: "{{ user }}"
+#  shell: kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}') | grep "token:" | awk '{print $2}' | tee admin-user-token.out
+#
+#- name: Fetch dashboard token from remote
+#  fetch:
+#    src: admin-user-token.out
+#    dest: from_remote/

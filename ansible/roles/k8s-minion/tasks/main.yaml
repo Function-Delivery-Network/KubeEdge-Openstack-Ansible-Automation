@@ -1,0 +1,92 @@
+- name: Uninstall old packages
+  become: True
+  apt:
+    state: absent
+    pkg:
+      - kubelet
+      - kubeadm
+      - kubernetes-cni
+
+- name: Remove swapfile from /etc/fstab
+  become: True
+  mount:
+    name: "{{ item }}"
+    fstype: swap
+    state: absent
+  with_items:
+    - swap
+    - none
+
+- name: Disable swap
+  become: True
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+
+- name: "Add k8's official GPG key to apt"
+  ansible.builtin.apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    # Key destination path
+    keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+    state: present
+
+#- name: Add a GPG key
+#  shell: curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+#  ignore_errors: True
+
+- name: Get DEB architecture
+  shell: dpkg --print-architecture
+  register: deb_architecture
+
+- name: Add repository for k8s
+  apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    filename: kubernetes.list
+
+- name: Install Kubernetes binaries
+  become: True
+  become_user: root
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+      - kubelet
+      - kubeadm
+      - kubectl
+
+  # https://github.com/ansible/ansible/issues/51663
+  register: result
+  until: result is not failed
+  retries: 12 # Wait up to 1 min
+  delay: 5
+- name: unmask kubelet
+  shell: systemctl unmask kubelet
+  become: True
+  ignore_errors: True
+
+
+- name: Restart kubelet
+  become: True
+  service:
+    name: kubelet
+    daemon_reload: yes
+    state: restarted
+  ignore_errors: True
+
+- name: Copy join command to host
+  become: True
+  copy:
+    src: "{{ playbook_dir }}/from_remote/join-command"
+    dest: $PWD/join-command.sh
+    mode: 0777
+  register: result
+  until: result is not failed
+  retries: 36 # Wait up to 3 min for the file to be created
+  delay: 5
+
+- name: Join cluster
+  become: True
+  command: sh $PWD/join-command.sh
+  ignore_errors: True

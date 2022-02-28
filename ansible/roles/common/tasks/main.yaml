@@ -1,0 +1,71 @@
+---
+# file: roles/common/tasks/main.yml
+
+#- name: Update to environment variables
+#  shell: sed 's/^/export /' /etc/environment > /tmp/env.sh && source /tmp/env.sh
+#  when: proxy == "tum"
+#  become: True
+
+- name: Update apt repo and cache on all Debian/Ubuntu boxes
+  apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+  become: True
+  ignore_errors: True
+
+  # https://github.com/ansible/ansible/issues/51663
+  register: result
+  until: result is not failed
+  retries: 12 # Wait up to 1 min
+  delay: 5
+# - name: Upgrade all packages on servers
+#   apt: upgrade=dist force_apt_get=yes
+#   become: True
+#   ignore_errors: True
+
+- name: Install requirements
+  apt:
+    pkg:
+      - curl
+      - chrony
+      - conntrack
+  become: True
+  ignore_errors: True
+
+  # https://github.com/ansible/ansible/issues/51663
+  register: result
+  until: result is not failed
+  retries: 12 # Wait up to 1 min
+  delay: 5
+
+- name: Enable service chrony
+  systemd:
+    name: chronyd
+    enabled: yes
+    state: restarted
+  ignore_errors: True
+  become: True
+
+- name: Enable service chrony
+  systemd:
+    name: chronyd
+    enabled: yes
+    state: restarted
+  ignore_errors: True
+  become: True
+
+#- name: Disable ipv6 and swap
+#  sysctl:
+#    name: "{{ item.name }}"
+#    value: "{{ item.value }}"
+#    state: present
+#    # reload: no
+#  with_items: "{{ sysctl }}"
+# - name: Use closer mirrors
+#   blockinfile:
+#     path: /etc/apt/sources.list
+#     insertbefore: BOF
+#     block: |
+#       deb mirror://mirrors.ubuntu.com/mirrors.txt bionic main restricted universe multiverse
+#       deb mirror://mirrors.ubuntu.com/mirrors.txt bionic-updates main restricted universe multiverse
+#       deb mirror://mirrors.ubuntu.com/mirrors.txt bionic-backports main restricted universe multiverse
+#       deb mirror://mirrors.ubuntu.com/mirrors.txt bionic-security main restricted universe multiverse
+

@@ -1,0 +1,51 @@
+---
+#- name: Create CRDS
+#  command: "{{ item }}"
+#  with_items:
+#    - git clone https://github.com/kubeedge/edgemesh.git
+#    - kubectl apply -f $PWD/edgemesh/build/crds/istio/
+
+- name: Read the /etc/kubeedge/config/cloudcore.yaml
+  become: True
+  slurp:
+    path: /etc/kubeedge/config/cloudcore.yaml
+  register: r_myfile
+
+- name: extract the data
+  set_fact:
+    mydata: "{{ r_myfile['content'] | b64decode | from_yaml }}"
+
+- name: Modify cloudStream to true
+  set_fact:
+    mydata: "{{ mydata | combine({'modules': {'dynamicController': {'enable': true}}}, recursive=True) }}"
+
+- name: Write back to /etc/kubeedge/config/cloudcore.yaml
+  become: True
+  copy:
+    content: '{{ mydata | to_nice_yaml }}'
+    dest: /etc/kubeedge/config/cloudcore.yaml
+
+- name: Kill Cloudcore and restart it
+  become: True
+  command: "{{ item }}"
+  with_items:
+    - systemctl restart cloudcore.service
+
+#- name: Copy files to host
+#  copy:
+#    src: "{{ item }}"
+#    dest: $PWD/
+#  with_fileglob:
+#    - "{{ role_path }}/files/*"
+
+#- name: Deploy edgemesh-server and agent
+#  command: "{{ item }}"
+#  with_items:
+#    - kubectl apply -f 01-namespace.yaml
+#    - kubectl apply -f 02-serviceaccount.yaml
+#    - kubectl apply -f 03-clusterrole.yaml
+#    - kubectl apply -f 04-clusterrolebinding.yaml
+#    - kubectl apply -f 05-configmap.yaml
+#    - kubectl apply -f 06-deployment.yaml
+#    - cd edgemesh
+#    - kubectl apply -f $PWD/edgemesh/build/agent/kubernetes/edgemesh-agent/

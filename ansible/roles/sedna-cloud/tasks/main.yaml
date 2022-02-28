@@ -1,0 +1,29 @@
+---
+- name: Copy files to host
+  copy:
+    src: "{{ item }}"
+    dest: $PWD/
+  with_fileglob:
+    - "{{ role_path }}/files/*"
+- name: sedna install
+  become: True
+  shell: bash sedna-install1.sh create &
+  args:
+    executable: /bin/bash
+  ignore_errors: True
+
+- name: timeout
+  wait_for:
+    timeout: 60
+
+- name: restart failed pods
+  command: kubectl -n kube-system delete pods --field-selector=status.phase=Failed
+  ignore_errors: True
+
+- name: restart pending pods in kube-system
+  command: kubectl -n kube-system delete pods --field-selector=status.phase=Pending
+  ignore_errors: True
+
+- name: restart all pods in kubernetes-dashboard
+  command: kubectl -n kubernetes-dashboard delete pods --field-selector=status.phase=Running
+  ignore_errors: True

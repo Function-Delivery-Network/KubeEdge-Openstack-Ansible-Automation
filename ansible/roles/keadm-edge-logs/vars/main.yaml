@@ -1,0 +1,3 @@
+---
+# file: roles/kubernetes/vars/main.yml
+user: ubuntu

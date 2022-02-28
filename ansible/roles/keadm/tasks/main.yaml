@@ -1,0 +1,15 @@
+---
+- name: Get Keadm binaries
+  become: True
+  command: wget https://github.com/kubeedge/kubeedge/releases/download/v{{ keadm_version }}/keadm-v{{ keadm_version }}-{{ keadm_host_os }}.tar.gz
+  ignore_errors: True
+
+- name: Unarchive Keadm binaries
+  become: True
+  command: tar -xvf keadm-v{{ keadm_version }}-{{ keadm_host_os }}.tar.gz
+  ignore_errors: True
+
+- name: copy them
+  become: True
+  command: cp keadm-v{{ keadm_version }}-{{ keadm_host_os }}/keadm/keadm /usr/local/bin/keadm
+  ignore_errors: True

@@ -1,0 +1,87 @@
+---
+- name: Get certification generation script
+  become: True
+  command: "{{ item }}"
+  with_items:
+    - wget https://raw.githubusercontent.com/kubeedge/kubeedge/master/build/tools/certgen.sh
+    - mv certgen.sh /etc/kubeedge/certgen.sh
+    - chmod +x /etc/kubeedge/certgen.sh
+
+- name: Generate certifications
+  become: True
+  command: /etc/kubeedge/certgen.sh stream
+  environment:
+    CLOUDCOREIPS: "{{ hostvars[inventory_hostname].ansible_host }}"
+
+- name: Get kubeedge tunnelport config map
+  become: True
+  command: kubectl get cm tunnelport -nkubeedge -oyaml
+  register: ip_tunnel_port_json
+
+- name: same configmap as yaml
+  ansible.builtin.set_fact:
+    cmap: "{{ ip_tunnel_port_json.stdout | to_json | from_yaml | from_yaml}}"
+
+- name: get tunnelport records from configmap
+  ansible.builtin.set_fact:
+    cmap2: "{{ cmap.metadata.annotations[\"tunnelportrecord.kubeedge.io\"] | from_yaml}}"
+
+- name: get tunnel ips
+  ansible.builtin.set_fact:
+    tunnel_ips: "{{ cmap2.ipTunnelPort | list}}"
+
+- name: get tunnel ports
+  ansible.builtin.set_fact:
+    tunnel_ports: "{{ cmap2.port | list}}"
+
+- set_fact:
+    host_tunnel_ip_port: "{{ host_tunnel_ip_port | default([]) + [dict(ip=item[0], port=item[1])] }}"
+  loop: "{{ tunnel_ips | zip(tunnel_ports) | list }}"
+
+- debug:
+    msg:  "IP Port dict {{ host_tunnel_ip_port}}"
+
+##- name: Loop over the dictionary
+##  debug:
+##    msg: iptables -t nat -A OUTPUT -p tcp --dport {{ item.port }} -j DNAT --to {{ item.ip }}:10003
+##  with_items:
+##    - "{{ host_tunnel_ip_port }}"
+#
+- name: set ip tables
+  become: True
+  command: iptables -t nat -A OUTPUT -p tcp --dport {{ item.port }} -j DNAT --to {{ item.ip }}:10003
+  with_items:
+    - "{{ host_tunnel_ip_port }}"
+
+- name: Read the /etc/kubeedge/config/cloudcore.yaml
+  become: True
+  slurp:
+    path: /etc/kubeedge/config/cloudcore.yaml
+  register: r_myfile
+
+- name: extract the data
+  set_fact:
+    mydata: "{{ r_myfile['content'] | b64decode | from_yaml }}"
+
+- name: Modify cloudStream to true
+  set_fact:
+    mydata: "{{ mydata | combine({'modules': {'cloudStream': {'enable': true}}}, recursive=True) }}"
+
+- name: Modify dynamicController to true
+  set_fact:
+    mydata: "{{ mydata | combine({'modules': {'dynamicController': {'enable': true}}}, recursive=True) }}"
+
+- debug:
+    msg:  "{{ mydata }}"
+
+- name: Write back to /etc/kubeedge/config/cloudcore.yaml
+  become: True
+  copy:
+    content: '{{ mydata | to_nice_yaml }}'
+    dest: /etc/kubeedge/config/cloudcore.yaml
+
+- name: Kill Cloudcore and restart it
+  become: True
+  command: "{{ item }}"
+  with_items:
+    - systemctl restart cloudcore.service
