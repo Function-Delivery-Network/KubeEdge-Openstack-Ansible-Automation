@@ -16,6 +16,18 @@ The following components are necessary for setting up and interacting with the c
  * [ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
  * [docker](https://docs.docker.com/engine/install/)
 
+## Currently following are enabled/deployment as part of this automation
+- [x] VMs creation (1 Master, 1 Worker, 1 Edge; can be changed in ``` variables.tf```)
+- [x] (Docker)
+- [x] (Kubernetes usig Kubeadm)
+- [x] (Flannel used as CNI)
+- [x] (Helm)
+- [x] (Keadm v1.9.1 both on Master and Edge)
+- [x] (Keadm logs enabled both on Master and Edge)
+- [x] (Edgemesh both on Master and Edge (https://edgemesh.netlify.app/guide/getting-started.html#dependencies))
+- [x] (Monitoring: Prometheus, Grafana)
+- [ ] (OpenFaaS)
+- [ ] (Sedna)
  
 ## Get Started
 
@@ -77,5 +89,6 @@ ansible-playbook worker.yml -vvvv
 ansible-playbook master-after-join.yml -vvvv
 # ansible-playbook -i cloud_hosts.ini --start-at-task "Start OpenWhisk Version of IoT Platform and create ow functions" master-after-join.yml -vvvv
 ```
+
 
 > **_NOTE:_**  It takes about 10 min for Terraform to run + 5 min for all the Pods to be _Running_/_Completed_.
