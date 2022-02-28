@@ -18,17 +18,17 @@ The following components are necessary for setting up and interacting with the c
 
 ## Currently following are enabled/deployment as part of this automation
 - [x] VMs creation (1 Master, 1 Worker, 1 Edge; can be changed in ``` variables.tf```)
-- [x] (Docker)
-- [x] (Kubernetes usig Kubeadm)
-- [x] (Flannel used as CNI)
-- [x] (Helm)
-- [x] (Keadm v1.9.1 both on Master and Edge)
-- [x] (Keadm logs enabled both on Master and Edge)
-- [x] (Edgemesh both on Master and Edge (https://edgemesh.netlify.app/guide/getting-started.html#dependencies))
-- [x] (Monitoring: Prometheus, Grafana)
-- [ ] (OpenFaaS)
-- [ ] (Sedna)
- 
+- [x] Docker
+- [x] Kubernetes usig Kubeadm
+- [x] Flannel used as CNI
+- [x] Helm
+- [x] Keadm v1.9.1 both on Master and Edge
+- [x] Keadm logs enabled both on Master and Edge
+- [x] Edgemesh both on Master and Edge (https://edgemesh.netlify.app/guide/getting-started.html#dependencies)
+- [x] Monitoring: Prometheus, Grafana
+- [ ] OpenFaaS
+- [ ] Sedna
+
 ## Get Started
 
 1. Clone the repository and go to the root directory:
