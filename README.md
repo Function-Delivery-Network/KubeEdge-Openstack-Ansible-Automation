@@ -90,5 +90,14 @@ ansible-playbook master-after-join.yml -vvvv
 # ansible-playbook -i cloud_hosts.ini --start-at-task "Start OpenWhisk Version of IoT Platform and create ow functions" master-after-join.yml -vvvv
 ```
 
+## Dashboard Links
+
+- **Kubernetes Dashboard** (http://MASTER_PUBLIC_IP:32007)
+<img src="./docs/diagrams/k8s-dashboard.png"/>
+
+- **Grafana Dashboard** (http://MASTER_PUBLIC_IP:32006)
+<img src="./docs/diagrams/grafana.png"/>
+
+- **Prometheus Configuration for Grafana** (http://MASTER_PUBLIC_IP:32009)
 
 > **_NOTE:_**  It takes about 10 min for Terraform to run + 5 min for all the Pods to be _Running_/_Completed_.
