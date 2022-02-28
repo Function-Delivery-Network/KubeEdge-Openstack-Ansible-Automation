@@ -87,7 +87,7 @@ cd ansible
 ansible-playbook master.yml -vvvv
 ansible-playbook worker.yml -vvvv
 ansible-playbook master-after-join.yml -vvvv
-# ansible-playbook -i cloud_hosts.ini --start-at-task "Start OpenWhisk Version of IoT Platform and create ow functions" master-after-join.yml -vvvv
+# ansible-playbook -i cloud_hosts.ini --start-at-task "Install K8s dashboard" master.yml -vvvv
 ```
 
 ## Dashboard Links
