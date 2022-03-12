@@ -249,7 +249,8 @@ spec:
         - name: xtables-lock
           hostPath:
             path: /run/xtables.lock
-            type: FileOrCreate---
+            type: FileOrCreate
+---
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
@@ -446,7 +447,8 @@ spec:
         - name: xtables-lock
           hostPath:
             path: /run/xtables.lock
-            type: FileOrCreate---
+            type: FileOrCreate
+---
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
