@@ -1,9 +1,9 @@
 # KubeEdge-Openstack-Ansible-Automation
-This is the repository for automatically deploying the [KubeEdge](https://github.com/kubeedge/kubeedge) to [OpenStack based cloud](https://www.openstack.org/) using [ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) and [terraform](https://learn.hashicorp.com/terraform/getting-started/install.html). 
+This is the repository for automatically deploying the [KubeEdge](https://github.com/kubeedge/kubeedge) to [OpenStack based cloud](https://www.openstack.org/) using [ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) and [terraform](https://learn.hashicorp.com/terraform/getting-started/install.html).
 
 
 ## Deployment Architecture
-Overall deployment automation architecture of IoT platform : 
+Overall deployment automation architecture of IoT platform:
 <img src="./docs/diagrams/terraform-ansible.png"/>
 
 
@@ -70,7 +70,6 @@ terraform init
 6. Bootstrap the cluster
 
 ```bash
-source ~/.bashrc
 terraform apply -auto-approve
 ```
 
@@ -80,9 +79,8 @@ terraform apply -auto-approve
 terraform destroy -auto-approve
 ```
 
-## Run Ansible Commands Seperately
+## Run Ansible Commands Separately
 ```bash
-source ~/.bashrc
 cd ansible
 ansible-playbook master.yml -vvvv
 ansible-playbook worker.yml -vvvv
