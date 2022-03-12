@@ -44,7 +44,7 @@
 
 - name: start edge mesh
   become: True
-  become: "{{ user }}"
+  become_user: "{{ user }}"
   command: "{{ item }}"
   with_items:
     - "{{edgemesh_command}}"

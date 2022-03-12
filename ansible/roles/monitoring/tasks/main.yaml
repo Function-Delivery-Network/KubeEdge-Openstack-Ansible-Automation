@@ -5,14 +5,14 @@
     dest: $PWD/monitoring/
 
 - name: Install Monitoring setup
-  become: "{{ user }}"
+  become_user: "{{ user }}"
   command: "{{ item }}"
   with_items:
     - kubectl apply --server-side -f monitoring/manifests/setup
 
 - pause: seconds=20
 - name: Install Monitoring components
-  become: "{{ user }}"
+  become_user: "{{ user }}"
   command: "{{ item }}"
   with_items:
     - kubectl apply -f monitoring/manifests/

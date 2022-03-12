@@ -111,13 +111,13 @@
   command: kubectl apply -f my_files/kube-flannel.yml
 
 - name: Check for taint
-  become: "{{ user }}"
+  become_user: "{{ user }}"
   shell: kubectl describe node {{ ansible_hostname }} | grep "node-role.kubernetes.io/master:NoSchedule"
   register: hasTaint
   ignore_errors: True
 
 - name: Remove the taint from master
-  become: "{{ user }}"
+  become_user: "{{ user }}"
   command: kubectl taint node {{ ansible_hostname }} node-role.kubernetes.io/master-
   when: hasTaint is succeeded
 
@@ -138,7 +138,7 @@
   become: True
 
 - name: Install K8s dashboard
-  become: "{{ user }}"
+  become_user: "{{ user }}"
   command: "{{ item }}"
   with_items:
     - kubectl apply -f my_files/dashboard.yaml
