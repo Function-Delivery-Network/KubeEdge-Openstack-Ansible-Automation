@@ -24,7 +24,7 @@
   until: result is not failed
   retries: 12 # Wait up to 1 min
   delay: 5
-  
+
 - name: "Add Docker's official GPG key to apt"
   ansible.builtin.apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg

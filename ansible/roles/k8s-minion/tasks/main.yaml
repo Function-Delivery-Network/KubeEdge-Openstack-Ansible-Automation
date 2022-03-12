@@ -66,7 +66,6 @@
   become: True
   ignore_errors: True
 
-
 - name: Restart kubelet
   become: True
   service:

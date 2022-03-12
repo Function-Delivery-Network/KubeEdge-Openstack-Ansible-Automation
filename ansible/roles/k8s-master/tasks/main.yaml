@@ -62,12 +62,11 @@
   until: result is not failed
   retries: 12 # Wait up to 1 min
   delay: 5
-  
+
 - name: unmask kubelet
   shell: systemctl unmask kubelet
   become: True
   ignore_errors: True
-
 
 - name: Restart kubelet
   become: True
@@ -80,8 +79,8 @@
   become: True
   command: "{{ item }}"
   with_items:
-   - systemctl start docker
-   - kubeadm init --pod-network-cidr=10.244.0.0/16
+    - systemctl start docker
+    - kubeadm init --pod-network-cidr=10.244.0.0/16
 
 - name: Create config directory for non-root user
   become: True
@@ -142,9 +141,8 @@
   become: "{{ user }}"
   command: "{{ item }}"
   with_items:
-   - kubectl apply -f my_files/dashboard.yaml
-   - kubectl create clusterrolebinding serviceaccounts-cluster-admin --clusterrole=cluster-admin --group=system:serviceaccounts
-
+    - kubectl apply -f my_files/dashboard.yaml
+    - kubectl create clusterrolebinding serviceaccounts-cluster-admin --clusterrole=cluster-admin --group=system:serviceaccounts
 #- name: Copy dashboard-admin-user.yaml to the cluster
 #  become: True
 #  copy:

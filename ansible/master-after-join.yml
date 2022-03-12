@@ -3,15 +3,14 @@
 - hosts: master
   become: yes
   roles:
-
-     - role: k8s-master-after-join
-       vars:
-          user: ubuntu
-          nvidia: "no"
-          proxy: "no"
-          kubernetes_version: 1.22.0-00
-          keadm_version: 1.6.2
-          keadm_host_os: linux-amd64
-     - role: helm
-     - role: monitoring
+    - role: k8s-master-after-join
+      vars:
+        user: ubuntu
+        nvidia: "no"
+        proxy: "no"
+        kubernetes_version: 1.22.0-00
+        keadm_version: 1.6.2
+        keadm_host_os: linux-amd64
+    - role: helm
+    - role: monitoring
     #  - role: create-images-iotplatform

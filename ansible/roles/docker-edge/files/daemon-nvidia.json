@@ -1,12 +1,14 @@
 {
-    "default-runtime": "nvidia",
-    "runtimes": {
-        "nvidia": {
-            "path": "/usr/bin/nvidia-container-runtime",
-            "runtimeArgs": []
-        }
-    },
-  "exec-opts": ["native.cgroupdriver=systemd"],
+  "default-runtime": "nvidia",
+  "runtimes": {
+    "nvidia": {
+      "path": "/usr/bin/nvidia-container-runtime",
+      "runtimeArgs": []
+    }
+  },
+  "exec-opts": [
+    "native.cgroupdriver=systemd"
+  ],
   "log-driver": "json-file",
   "log-opts": {
     "max-size": "100m"

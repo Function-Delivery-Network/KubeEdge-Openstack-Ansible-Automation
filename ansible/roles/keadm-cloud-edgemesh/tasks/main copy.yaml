@@ -22,7 +22,7 @@
 - name: Write back to /etc/kubeedge/config/cloudcore.yaml
   become: True
   copy:
-    content: '{{ mydata | to_nice_yaml }}'
+    content: "{{ mydata | to_nice_yaml }}"
     dest: /etc/kubeedge/config/cloudcore.yaml
 
 - name: Kill Cloudcore and restart it
@@ -30,7 +30,6 @@
   command: "{{ item }}"
   with_items:
     - systemctl restart cloudcore.service
-
 #- name: Copy files to host
 #  copy:
 #    src: "{{ item }}"

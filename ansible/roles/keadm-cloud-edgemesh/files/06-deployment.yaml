@@ -25,32 +25,32 @@ spec:
                   - key: node-role.kubernetes.io/master
                     operator: Exists
       hostNetwork: true
-#     use label to selector node
+      #     use label to selector node
       #nodeName: cloud-node
       containers:
-      - name: edgemesh-server
-        image: kubeedge/edgemesh-server:latest
-        env:
-          - name: MY_NODE_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: spec.nodeName
-        ports:
-        - containerPort: 20004
-          name: relay
-          protocol: TCP
-        resources:
-          limits:
-            cpu: 200m
-            memory: 1Gi
-          requests:
-            cpu: 100m
-            memory: 512Mi
-        volumeMounts:
-          - name: conf
-            mountPath: /etc/kubeedge/config
-          - name: edgemesh
-            mountPath: /etc/kubeedge/edgemesh
+        - name: edgemesh-server
+          image: kubeedge/edgemesh-server:latest
+          env:
+            - name: MY_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          ports:
+            - containerPort: 20004
+              name: relay
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 512Mi
+          volumeMounts:
+            - name: conf
+              mountPath: /etc/kubeedge/config
+            - name: edgemesh
+              mountPath: /etc/kubeedge/edgemesh
       restartPolicy: Always
       serviceAccountName: edgemesh-server
       volumes:

@@ -20,8 +20,8 @@
   become: True
   ansible.builtin.replace:
     path: "{{ item.path }}"
-    regexp: '^(.*)- --port=0(.*)$'
-    replace: '#- --port=0'
+    regexp: "^(.*)- --port=0(.*)$"
+    replace: "#- --port=0"
   loop:
     - path: /etc/kubernetes/manifests/kube-scheduler.yaml
     - path: /etc/kubernetes/manifests/kube-controller-manager.yaml

@@ -51,7 +51,6 @@
     state: restarted
   ignore_errors: True
   become: True
-
 #- name: Disable ipv6 and swap
 #  sysctl:
 #    name: "{{ item.name }}"
@@ -68,4 +67,3 @@
 #       deb mirror://mirrors.ubuntu.com/mirrors.txt bionic-updates main restricted universe multiverse
 #       deb mirror://mirrors.ubuntu.com/mirrors.txt bionic-backports main restricted universe multiverse
 #       deb mirror://mirrors.ubuntu.com/mirrors.txt bionic-security main restricted universe multiverse
-

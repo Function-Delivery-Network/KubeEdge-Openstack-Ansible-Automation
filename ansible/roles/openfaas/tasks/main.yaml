@@ -10,13 +10,13 @@
   become: "{{ user }}"
   command: "{{ item }}"
   with_items:
-   - kubectl apply -f my_openfaas/namespaces.yaml
+    - kubectl apply -f my_openfaas/namespaces.yaml
 
 - name: Install Openfaas
   become: "{{ user }}"
   command: "{{ item }}"
   with_items:
-   - kubectl apply -f my_openfaas/openfaas.yaml
+    - kubectl apply -f my_openfaas/openfaas.yaml
 
 - name: Generate OpenFaaS password
   become: yes
