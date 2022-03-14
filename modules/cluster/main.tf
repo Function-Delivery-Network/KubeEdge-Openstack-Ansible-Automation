@@ -12,8 +12,8 @@ terraform {
 resource "local_file" "group_vars" {
   content = templatefile("./templates/group_vars.tpl",
     {
-      pod_subnet               = var.pod_subnet
-      cluster_name             = var.cluster_name
+      pod_subnet    = var.pod_subnet
+      cluster_name  = var.cluster_name
       keadm_version = var.keadm_version
       keadm_host_os = var.keadm_host_os
     }
@@ -27,7 +27,7 @@ resource "local_file" "hosts" {
       cluster_name     = var.cluster_name
       master_instances = module.master.instances
       worker_instances = module.worker.instances
-      edge_instances = module.edge.instances
+      edge_instances   = module.edge.instances
     }
   )
   filename = "./ansible/${var.cluster_name}_hosts.ini"
@@ -127,7 +127,7 @@ module "edge" {
 # Run Ansible
 
 resource "null_resource" "ansible_master" {
-  count = var.master_count
+  count    = var.master_count
   triggers = {
     master_instance_id = module.master.instances[count.index].id
   }
@@ -152,7 +152,7 @@ resource "null_resource" "ansible_master" {
 }
 
 resource "null_resource" "ansible_worker" {
-  count = var.worker_count
+  count    = var.worker_count
   triggers = {
     worker_instance_id = module.worker.instances[count.index].id
   }
@@ -178,7 +178,7 @@ resource "null_resource" "ansible_worker" {
 }
 
 resource "null_resource" "ansible_master_after" {
-  count = 1
+  count    = 1
   triggers = {
     master_instance_id = module.master.instances[count.index].id
   }
@@ -204,7 +204,7 @@ resource "null_resource" "ansible_master_after" {
 }
 
 resource "null_resource" "ansible_master_kube_edge_cloud" {
-  count = 1
+  count    = 1
   triggers = {
     master_instance_id = module.master.instances[count.index].id
   }
@@ -230,7 +230,7 @@ resource "null_resource" "ansible_master_kube_edge_cloud" {
 }
 
 resource "null_resource" "ansible_edge" {
-  count = var.edge_count
+  count    = var.edge_count
   triggers = {
     worker_instance_id = module.edge.instances[count.index].id
   }

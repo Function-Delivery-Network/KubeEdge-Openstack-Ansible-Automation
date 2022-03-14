@@ -26,7 +26,7 @@ variable "secgroup_description" {
 }
 
 variable "secgroup_rules" {
-  type = list
+  type    = list
   default = [
     { "cidr" = "0.0.0.0/0", "ip_protocol" = "tcp", "port" = 22 },
     { "cidr" = "0.0.0.0/0", "ip_protocol" = "tcp", "port" = 6443 },
@@ -60,7 +60,6 @@ variable "master_count" {
 variable "worker_count" {
   type = number
 }
-
 
 variable "edge_count" {
   type = number
@@ -116,11 +115,10 @@ variable "ssh_key_file" {
   type = string
 }
 
-
 variable "keadm_version" {
-  type    = string
+  type = string
 }
 
 variable "keadm_host_os" {
-  type    = string
+  type = string
 }

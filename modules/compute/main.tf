@@ -1,6 +1,6 @@
 # Define required providers
 terraform {
-required_version = ">= 0.14.0"
+  required_version = ">= 0.14.0"
   required_providers {
     openstack = {
       source  = "terraform-provider-openstack/openstack"
@@ -10,8 +10,8 @@ required_version = ">= 0.14.0"
 }
 # Create Instances
 resource "openstack_compute_instance_v2" "instance" {
-  depends_on = [var.instance_depends_on]
-  count      = var.instance_count
+  depends_on        = [var.instance_depends_on]
+  count             = var.instance_count
   name              = format("%s-%s-%02d", var.cluster_name, var.instance_role, count.index + 1)
   flavor_name       = var.instance_flavor_name
   key_pair          = var.instance_keypair_name
@@ -48,7 +48,7 @@ resource "openstack_compute_floatingip_associate_v2" "floatingip_associate_insta
 
 # Export the instances' data
 data "null_data_source" "instances" {
-  count = var.instance_count
+  count  = var.instance_count
   inputs = {
     name        = openstack_compute_instance_v2.instance[count.index].name
     id          = openstack_compute_instance_v2.instance[count.index].id
