@@ -56,9 +56,19 @@ variable "instance_image_id" {
   default = "a51394b8-ffb6-4e04-a7a5-108d7ff58e52"
 }
 
-variable "instance_flavor_name" {
+variable "master_instance_flavor_name" {
+  type    = string
+  default = "lrz.large"
+}
+
+variable "worker_instance_flavor_name" {
   type    = string
   default = "lrz.medium"
+}
+
+variable "edge_instance_flavor_name" {
+  type    = string
+  default = "lrz.small"
 }
 
 variable "instance_keypair_name" {

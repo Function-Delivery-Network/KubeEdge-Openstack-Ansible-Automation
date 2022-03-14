@@ -69,7 +69,15 @@ variable "instance_image_id" {
   type = string
 }
 
-variable "instance_flavor_name" {
+variable "master_instance_flavor_name" {
+  type = string
+}
+
+variable "worker_instance_flavor_name" {
+  type = string
+}
+
+variable "edge_instance_flavor_name" {
   type = string
 }
 

@@ -60,7 +60,7 @@ module "master" {
   instance_role                               = "master"
   instance_count                              = var.master_count
   instance_image_id                           = var.instance_image_id
-  instance_flavor_name                        = var.instance_flavor_name
+  instance_flavor_name                        = var.master_instance_flavor_name
   instance_keypair_name                       = var.instance_keypair_name
   instance_availability_zone                  = var.instance_availability_zone
   instance_block_device_source_type           = var.instance_block_device_source_type
@@ -83,7 +83,7 @@ module "worker" {
   instance_role                               = "worker"
   instance_count                              = var.worker_count
   instance_image_id                           = var.instance_image_id
-  instance_flavor_name                        = var.instance_flavor_name
+  instance_flavor_name                        = var.worker_instance_flavor_name
   instance_keypair_name                       = var.instance_keypair_name
   instance_availability_zone                  = var.instance_availability_zone
   instance_block_device_source_type           = var.instance_block_device_source_type
@@ -107,7 +107,7 @@ module "edge" {
   instance_role                               = "edge"
   instance_count                              = var.edge_count
   instance_image_id                           = var.instance_image_id
-  instance_flavor_name                        = var.instance_flavor_name
+  instance_flavor_name                        = var.edge_instance_flavor_name
   instance_keypair_name                       = var.instance_keypair_name
   instance_availability_zone                  = var.instance_availability_zone
   instance_block_device_source_type           = var.instance_block_device_source_type

@@ -26,7 +26,9 @@ module "cloud_cluster" {
   master_count                      = var.master_count
   edge_count                        = var.edge_count
   instance_image_id                 = var.instance_image_id
-  instance_flavor_name              = var.instance_flavor_name
+  master_instance_flavor_name       = var.master_instance_flavor_name
+  worker_instance_flavor_name       = var.worker_instance_flavor_name
+  edge_instance_flavor_name         = var.edge_instance_flavor_name
   instance_keypair_name             = var.instance_keypair_name
   instance_block_device_volume_size = var.instance_block_device_volume_size
   ssh_key_file                      = var.ssh_key_file
