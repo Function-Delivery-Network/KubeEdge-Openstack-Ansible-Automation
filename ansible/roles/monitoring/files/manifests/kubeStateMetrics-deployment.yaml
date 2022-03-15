@@ -99,6 +99,4 @@ spec:
             runAsGroup: 65532
             runAsNonRoot: true
             runAsUser: 65532
-      nodeSelector:
-        nodetype: cloud
       serviceAccountName: kube-state-metrics
