@@ -1,8 +1,15 @@
 - name: Copy files to host
   become: True
   copy:
-    src: "{{ role_path }}/files/"
+    src: manifests
     dest: $PWD/monitoring/
+
+- name: Template files to host
+  template:
+    src: "{{ item }}"
+    dest: $PWD/monitoring/manifests/{{ item | basename | regex_replace('\.j2$', '') }}
+  with_fileglob:
+    - "manifests/*.yaml.j2"
 
 - name: Install Monitoring setup
   become_user: "{{ user }}"

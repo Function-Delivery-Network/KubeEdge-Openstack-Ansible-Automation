@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - args:
-            - --web.listen-address=127.0.0.1:9100
+            - --web.listen-address=127.0.0.1:9101
             - --path.sysfs=/host/sys
             - --path.rootfs=/host/root
             - --no-collector.wifi
@@ -56,8 +56,12 @@ spec:
             - --logtostderr
             - --secure-listen-address=[$(IP)]:9100
             - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
-            - --upstream=http://127.0.0.1:9100/
+            - --upstream=http://127.0.0.1:9101/
           env:
+            - name: KUBERNETES_SERVICE_HOST
+              value: {{ ansible_host }}
+            - name: KUBERNETES_SERVICE_PORT
+              value: "6443"
             - name: IP
               valueFrom:
                 fieldRef:
