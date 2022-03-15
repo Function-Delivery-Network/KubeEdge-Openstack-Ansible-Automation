@@ -9,3 +9,4 @@
     - role: k8s-master-reset
     - role: docker
     - role: k8s-master
+    - role: helm

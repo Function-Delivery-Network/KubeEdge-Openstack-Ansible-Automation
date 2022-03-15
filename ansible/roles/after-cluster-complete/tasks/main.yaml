@@ -1,0 +1,4 @@
+- name: Taint edge nodes
+  command: kubectl taint node {{ item }} node-role.kubernetes.io/edge:NoSchedule --overwrite
+  with_items:
+    - "{{ groups['edge'] }}"

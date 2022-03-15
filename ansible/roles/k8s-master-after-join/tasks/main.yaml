@@ -1,8 +1,0 @@
-- pause: seconds=120
-- name: give edge nodes labels
-  become_user: "{{ user }}"
-  command: "{{ item }}"
-  with_items:
-    - kubectl label node {{ansible_hostname}} nodetype=cloud --overwrite
-    # - kubectl label node vmschulz39 nodetype=edge --overwrite
-    # - kubectl label node vmschulz40 nodetype=edge --overwrite

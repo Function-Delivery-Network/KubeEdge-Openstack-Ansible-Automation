@@ -177,32 +177,6 @@ resource "null_resource" "ansible_worker" {
   depends_on = [null_resource.ansible_master]
 }
 
-resource "null_resource" "ansible_master_after" {
-  count    = 1
-  triggers = {
-    master_instance_id = module.master.instances[count.index].id
-  }
-
-  provisioner "remote-exec" {
-    inline = ["#Connected"]
-
-    connection {
-      user        = var.instance_user
-      host        = module.master.instances[count.index].floating_ip
-      private_key = file(var.ssh_key_file)
-      agent       = "true"
-    }
-  }
-
-  provisioner "local-exec" {
-    command = <<EOT
-    cd ansible;
-    ansible-playbook -i ${var.cluster_name}_hosts.ini master-after-join.yml
-    EOT
-  }
-  depends_on = [null_resource.ansible_master]
-}
-
 resource "null_resource" "ansible_master_kube_edge_cloud" {
   count    = 1
   triggers = {
@@ -226,7 +200,7 @@ resource "null_resource" "ansible_master_kube_edge_cloud" {
     ansible-playbook -i ${var.cluster_name}_hosts.ini kube_edge_cloud.yml
     EOT
   }
-  depends_on = [null_resource.ansible_master_after]
+  depends_on = [null_resource.ansible_master]
 }
 
 resource "null_resource" "ansible_edge" {
@@ -253,6 +227,32 @@ resource "null_resource" "ansible_edge" {
     EOT
   }
   depends_on = [null_resource.ansible_master_kube_edge_cloud]
+}
+
+resource "null_resource" "ansible_after_cluster_complete" {
+  count    = 1
+  triggers = {
+    worker_instance_id = module.edge.instances[count.index].id
+  }
+
+  provisioner "remote-exec" {
+    inline = ["#Connected"]
+
+    connection {
+      user        = var.instance_user
+      host        = module.master.instances[count.index].floating_ip
+      private_key = file(var.ssh_key_file)
+      agent       = "true"
+    }
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+    cd ansible;
+    ansible-playbook -i ${var.cluster_name}_hosts.ini after_cluster_complete.yml
+    EOT
+  }
+  depends_on = [null_resource.ansible_edge]
 }
 
 # resource "null_resource" "ansible_master_sedna" {

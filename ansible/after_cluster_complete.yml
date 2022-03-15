@@ -1,0 +1,8 @@
+---
+- hosts: master
+  become: yes
+  vars:
+    user: "ubuntu"
+  roles:
+    - role: after-cluster-complete
+    - role: monitoring
