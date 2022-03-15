@@ -1,0 +1,10 @@
+- name: Copy files to host
+  copy:
+    src: manifests
+    dest: $PWD/monitoring-metrics-server/
+
+- name: Install Monitoring setup with Metrics Server
+  become_user: "{{ user }}"
+  command: "{{ item }}"
+  with_items:
+    - kubectl apply -f monitoring-metrics-server/manifests/
