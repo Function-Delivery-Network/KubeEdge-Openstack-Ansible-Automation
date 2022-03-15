@@ -1,39 +1,13 @@
-- name: Copy files to host
+- name: Install arkade tool
   become: True
-  copy:
-    src: "{{ item }}"
-    dest: $PWD/my_openfaas/
-  with_fileglob:
-    - "{{ role_path }}/files/*"
-
-- name: Install Openfaas Namespaces
-  become: "{{ user }}"
   command: "{{ item }}"
   with_items:
-    - kubectl apply -f my_openfaas/namespaces.yaml
+    - wget https://github.com/alexellis/arkade/releases/latest/download/arkade
+    - chmod +x arkade
+    - mv arkade /usr/local/bin/arkade
 
 - name: Install Openfaas
-  become: "{{ user }}"
+  become: True
   command: "{{ item }}"
   with_items:
-    - kubectl apply -f my_openfaas/openfaas.yaml
-
-- name: Generate OpenFaaS password
-  become: yes
-  become_user: "{{ user }}"
-  shell: kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 -d
-  register: openfaas_password
-
-- name: Copy password to local file
-  become: false
-  local_action: copy content="{{ openfaas_password.stdout_lines[0] }}" dest="./from_remote/openfass-password"
-#- name: Install Openfaas
-#  become: "{{ user }}"
-#  command: "{{ item }}"
-#  with_items:
-#   - helm repo add openfaas https://openfaas.github.io/faas-netes/
-#   - helm repo update
-#   - git clone https://github.com/openfaas/faas-netes.git
-#   - cd faas-netes
-#   -
-#   - helm upgrade openfaas --install openfaas/openfaas --namespace openfaas  --set functionNamespace=openfaas-fn --set generateBasicAuth=true
+    - arkade install openfaas --set openfaasPRO=False

@@ -7,3 +7,4 @@
     - role: after-cluster-complete
     - role: monitoring
     - role: monitoring-metrics-server
+    - role: openfaas
