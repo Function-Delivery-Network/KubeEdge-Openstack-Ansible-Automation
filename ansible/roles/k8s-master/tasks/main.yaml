@@ -87,6 +87,7 @@
   file:
     path: $PWD/.kube
     state: directory
+    owner: "{{ user }}"
     mode: "0755"
 
 - name: Copy config file to non-root user directory
