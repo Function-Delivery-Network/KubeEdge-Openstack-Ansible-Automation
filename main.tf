@@ -15,7 +15,7 @@ provider "openstack" {
   password    = var.openstack_password
   auth_url    = var.openstack_auth_url
   region      = var.openstack_region
-  domain_name = "ADS"
+  domain_name = var.openstack_user_domain_name
 }
 
 # Cloud cluster

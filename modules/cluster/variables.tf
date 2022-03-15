@@ -26,7 +26,7 @@ variable "secgroup_description" {
 }
 
 variable "secgroup_rules" {
-  type    = list
+  type    = list(object({ cidr = string, ip_protocol = string, port = number }))
   default = [
     { "cidr" = "0.0.0.0/0", "ip_protocol" = "tcp", "port" = 22 },
     { "cidr" = "0.0.0.0/0", "ip_protocol" = "tcp", "port" = 6443 },
