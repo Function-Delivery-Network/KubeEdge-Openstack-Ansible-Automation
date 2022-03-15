@@ -4,13 +4,6 @@
   become: True
   roles:
     - role: common
-      vars:
-        user: ubuntu
-        nvidia: "no"
-        proxy: "no"
-        kubernetes_version: 1.22.0-00
-        keadm_version: 1.9.1
-        keadm_host_os: linux-amd64
     - role: docker-edge
     - role: keadm
     - role: keadm-edge

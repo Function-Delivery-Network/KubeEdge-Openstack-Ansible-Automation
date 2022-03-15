@@ -2,15 +2,10 @@
 # file: master.yml
 - hosts: master
   become: yes
+  vars:
+    user: "ubuntu"
   roles:
     - role: common
-      vars:
-        user: ubuntu
-        nvidia: "no"
-        proxy: "no"
-        kubernetes_version: 1.22.0-00
-        keadm_version: 1.6.2
-        keadm_host_os: linux-amd64
     - role: k8s-master-reset
     - role: docker
     - role: k8s-master
