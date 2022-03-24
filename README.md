@@ -25,8 +25,8 @@ The following components are necessary for setting up and interacting with the c
 - [x] Keadm v1.9.1 both on Master and Edge
 - [x] Keadm logs enabled both on Master and Edge
 - [x] Edgemesh both on Master and Edge (https://edgemesh.netlify.app/guide/getting-started.html#dependencies)
-- [x] Monitoring: Prometheus, Grafana
-- [ ] OpenFaaS
+- [x] Monitoring: Prometheus, Grafana, Kubernetes Metrics Server for edge
+- [x] OpenFaaS
 - [ ] Sedna
 
 ## Get Started
