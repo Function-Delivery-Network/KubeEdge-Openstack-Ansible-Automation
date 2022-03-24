@@ -80,7 +80,7 @@
   command: "{{ item }}"
   with_items:
     - systemctl start docker
-    - kubeadm init --pod-network-cidr=10.244.0.0/16
+    - kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-cert-extra-sans={{ ansible_host }}
 
 - name: Create config directory for non-root user
   become: True
